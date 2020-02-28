@@ -6,46 +6,16 @@ You must have both Docker and the Go programming language install for this
 test environment to function. How to get these working is beyond the scope
 of this document.
 
-## Fetch Tools
+## Get the shell script
+To setup the enviroment automatically download the `voltha` script and make it executable:
 ```bash
-export GOPATH=$(pwd)
-mkdir -p $GOPATH/bin
-curl -o $GOPATH/bin/kubectl -sSL https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/$(go env GOHOSTOS)/$(go env GOARCH)/kubectl
-curl -o $GOPATH/bin/kind \
-	-sSL https://github.com/kubernetes-sigs/kind/releases/download/v0.4.0/kind-$(go env GOHOSTOS)-$(go env GOARCH)
-curl -o $GOPATH/bin/voltctl \
-	-sSL https://github.com/opencord/voltctl/releases/download/v1.0.12/voltctl-v1.0.12-$(go env GOHOSTOS)-$(go env GOARCH)
-export PATH=$(go env GOPATH)/bin:$PATH
-curl -sSL https://git.io/get_helm.sh | USE_SUDO=false HELM_INSTALL_DIR=$(go env GOPATH)/bin bash
-chmod 755 $GOPATH/bin/kind $GOPATH/bin/voltctl $GOPATH/bin/kubectl
-export PATH=$(go env GOPATH)/bin:$PATH
-```
-
-## Minimal v. Full
-This files contained in this repository can be used to deploy either a minimal
-or full voltha deployment. The difference is characterized in the following
-table:
-
-| RESOURCE                | MINIMAL       | FULL                      |
-| ----------------------- | ------------- | ------------------------- |
-| K8s Control Plane Nodes | 1             | 1                         |
-| K8s Workers             | 2             | 3                         |
-| EtcdOperator Components | Operator only | Operator, Backup, Restore |
-| EtcdCluster             | 1 Member      | 3 Members                 |
-
-Throughout this `README.md` file deployment and configuration files are
-referenced in the form **$TYPE-cluster.cfg** and **$TYPE-values.yaml**.
-Depending on which type of deloyment you wish to install replace **$TYPE**
-with either **minimal** or **full**. If you set the environment variable to the
-desired deployment type, example below, then the commands can be executed via
-a simply copy and paste to your command line.
-```bash
-export TYPE=minimal
+curl https://raw.githubusercontent.com/ciena/kind-voltha/master/voltha --output voltha
+chmod +x voltha
 ```
 
 ## TL;DR
 OK, if you really don't care how it starts and you just wanted started. After
-cloning the repository and making sure you have Go and Docker available, just
+downloading the script and making sure you have Go and Docker available, just
 execute `./voltha up` and the minimal cluster should start.
 
 To remove voltha use `./voltha down`
@@ -92,6 +62,42 @@ Please check the `releases` folder to see the available ones.
 | `VOLTHA_ADAPTER_OPEN_ONU_CHART` | onf/voltha-adapter-openonu   | Helm chart to use to install OpenOnu adapter                                        |
 | `ONLY_ONE`                      | yes                          | Run a single `rw-core`, no `api-server`, and no `ssh` CLI                           |
 
+## Minimal v. Full
+This files contained in this repository can be used to deploy either a minimal
+or full voltha deployment. The difference is characterized in the following
+table:
+
+| RESOURCE                | MINIMAL       | FULL                      |
+| ----------------------- | ------------- | ------------------------- |
+| K8s Control Plane Nodes | 1             | 1                         |
+| K8s Workers             | 2             | 3                         |
+| EtcdOperator Components | Operator only | Operator, Backup, Restore |
+| EtcdCluster             | 1 Member      | 3 Members                 |
+
+Throughout this `README.md` file deployment and configuration files are
+referenced in the form **$TYPE-cluster.cfg** and **$TYPE-values.yaml**.
+Depending on which type of deloyment you wish to install replace **$TYPE**
+with either **minimal** or **full**. If you set the environment variable to the
+desired deployment type, example below, then the commands can be executed via
+a simply copy and paste to your command line.
+```bash
+export TYPE=minimal
+```
+
+## Manually Fetch Tools
+```bash
+export GOPATH=$(pwd)
+mkdir -p $GOPATH/bin
+curl -o $GOPATH/bin/kubectl -sSL https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/$(go env GOHOSTOS)/$(go env GOARCH)/kubectl
+curl -o $GOPATH/bin/kind \
+	-sSL https://github.com/kubernetes-sigs/kind/releases/download/v0.4.0/kind-$(go env GOHOSTOS)-$(go env GOARCH)
+curl -o $GOPATH/bin/voltctl \
+	-sSL https://github.com/opencord/voltctl/releases/download/v1.0.12/voltctl-v1.0.12-$(go env GOHOSTOS)-$(go env GOARCH)
+export PATH=$(go env GOPATH)/bin:$PATH
+curl -sSL https://git.io/get_helm.sh | USE_SUDO=false HELM_INSTALL_DIR=$(go env GOPATH)/bin bash
+chmod 755 $GOPATH/bin/kind $GOPATH/bin/voltctl $GOPATH/bin/kubectl
+export PATH=$(go env GOPATH)/bin:$PATH
+```
 
 ## Create Kubernetes Cluster
 Kind provides a command line control tool to easily create Kubernetes clusters
